@@ -1,0 +1,26 @@
+@import '../../../../../assets/scss/ScssVariable';
+
+.tb-lead-unqualified-report {
+  .orderable-icon {
+    font-size: 20px !important;
+    padding: 3px 0px 0px 0px;
+    position: absolute;
+
+    .path2:before,
+    .path3:before {
+      color: $lightGray;
+    }
+  }
+}
+.tb-border-table-lead {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.ellipsis-text {
+	max-width: 150px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+}
