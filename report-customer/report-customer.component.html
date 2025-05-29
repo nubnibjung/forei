@@ -1,0 +1,272 @@
+<div class="report-content-filter">
+	<div class="report-search" id="search">
+		<go5-search
+			[category]="'primary'"
+			[(ngModel)]="filter.keyword"
+			[placeholder]="'common_search' | sPhrase | async"
+			(ngModelChange)="onSearch('keyword', $event)"
+		>
+		</go5-search>
+	</div>
+
+	<div class="report-content-toolbar">
+		<go5-dropdown-filter
+			[dataSource]="dataSourceFilter"
+			[allowLocaliza]="true"
+			[value]="filter"
+			[maxWidth]="'150px'"
+			[category]="'primary'"
+			[mode]="'overflow-popup'"
+			[size]="'medium'"
+			[popupWidth_px]="276"
+			(changed)="onSelectedFilter($event)"
+			(clear)="onClearAll($event)"
+		>
+		</go5-dropdown-filter>
+	</div>
+	<div class="report-additional-filter">
+		<app-date-range
+			[reportType]="'customer-management'"
+			(selected)="setFilter($event)"
+			[value]="dateRang"
+			[filterSize]="'medium'"
+			[maxWidth]="'240px'"
+			[category]="'primary'"
+		></app-date-range>
+	</div>
+</div>
+
+<div #dataTable class="tb-report sales-order-report customer-management-table">
+	<ng-container>
+	<app-table-standard
+		[data]="Reportdata"
+		[columns]="columns"
+		[isLoading]="loadingCustomers"
+		(sorted)="sortingBy($event)"
+		(reachedBottom)="onScroll($event)"
+	/>
+</ng-container>
+
+</div>
+
+<ng-template #tbData let-data="dataList" let-export="export">
+	<div class="tb-report sales-order-report">
+		<app-msl-sidebar
+			#editOwner
+			(search)="onSearchOwner($event)"
+			(selected)="onSelectOwner($event)"
+			[fields]="fieldsCustomerOwner"
+			[keyTitle]="'CUSTOMER.addCustomerOwner'"
+		></app-msl-sidebar>
+		<app-attachment-modal #attachmentModal></app-attachment-modal></div
+></ng-template>
+
+<ng-template #interestBody let-i="index" let-value let-column="column">
+	<td style="width: 300px; min-width: 300px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span
+				*ngFor="let interest of value.customerInterestIds?.value"
+				class="label label-stt-primary disabled ellipsis-text"
+			>
+				{{ getSelectedText(topicInterests, interest, topicInterestFields) | phrase | async }}
+			</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-dropdown-selection
+				[(ngModel)]="value.customerInterestIds.value"
+				(selected)="saveChangeMsl('customerInterestIds', value, $event)"
+				(focus)="setValue('customerInterestIds', value)"
+				(remove)="removingMsl('customerInterestIds', value, $event)"
+				[dataSource]="topicInterests"
+				[disabled]="value.customerInterestIds.state === CustomerFieldState.Hidden"
+				[fields]="topicInterestFields"
+				[mode]="'multi'"
+				[popupType]="'popup'"
+				[popupWidth_px]="200"
+				[allowShowRemove]="false"
+			>
+			</go5-dropdown-selection>
+		</ng-container>
+	</td>
+</ng-template>
+
+<ng-template #ownerBody let-value let-i="index" let-column="column">
+	<td style="width: 180px; min-width: 180px">
+		<app-avatar-group
+			[values]="value.customerOwnersStr?.value"
+			[fields]="{ picture: 'pictureUrl', text: 'userFullname' }"
+			[avatarSize]="'36px'"
+			[fontSize]="'12px'"
+		>
+		</app-avatar-group>
+		<div>
+			<span (click)="addOwner(value)" *ngIf="canAssign" class="label label-add label-icon">
+				<i class="icon icon-Add"></i>
+			</span>
+		</div>
+	</td>
+</ng-template>
+
+<ng-template #customBody let-value let-i="index" let-column="column">
+	<td style="width: 300px; min-width: 300px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<p (click)="openCustomerDetailDialog($event, value.customerId?.value)" class="text-link-primary font16">
+				{{ value.customerName?.value }}
+			</p>
+			<p class="customer-code">{{ value.customerCode?.value }}</p>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-textfield
+				[(ngModel)]="value.customerName.value"
+				(change)="saveChange('customerName', value)"
+				(focus)="setValue('customerName', value, CustomerFieldState.ShowAndRequired)"
+				[maxLength]="250"
+				category="primary"
+				class="font16"
+			></go5-textfield>
+
+			<go5-textfield
+				[(ngModel)]="value.customerCode.value"
+				(change)="saveChange('customerCode', value)"
+				(focus)="setValue('customerCode', value)"
+				[disabled]="value.customerCode.state === CustomerFieldState.Hidden"
+				[maxLength]="50"
+				[placeholder]="'common_customer_customer_code' | phrase | async"
+				category="primary"
+			></go5-textfield>
+		</ng-container>
+
+		<div class="form-group">
+			<p class="weight-medium font11 tag">
+				<span
+					*ngFor="let contact of value.contactIds?.value || []"
+					class="label-inplace label label-stt label-stt-outline disabled"
+					[ngClass]="{ 'text-link': canEdit }"
+					(click)="openEditContact(value, contact)"
+				>
+					<i class="icon icon-Menu-Staff"></i>{{ contact.contactName }}
+				</span>
+				<span (click)="openEditContact(value)" class="label label-add">
+					<i class="icon icon-Add"></i>{{ 'common_contact_add_contact' | phrase | async }}
+				</span>
+			</p>
+		</div>
+	</td>
+</ng-template>
+<ng-template #stateBody let-value let-i="index" let-column="column">
+	<td style="width: 180px; min-width: 180px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span>{{ getSelectedText(customerStates, value.customerType?.value) | phrase | async }}</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-dropdown-selection
+				[(ngModel)]="value.customerType.value"
+				(selected)="saveChangeDdl('customerType', value, $event)"
+				(focus)="setValue('customerType', value)"
+				[dataSource]="customerStates"
+				[fields]="field"
+				[disabled]="value.customerType.state === CustomerFieldState.Hidden"
+				[mode]="'single'"
+				[popupWidth_px]="200"
+				[allowShowRemove]="false"
+			>
+				<ng-template #itemTemplate let-data>{{ data.text | phrase | async }}</ng-template>
+				<ng-template #valueTemplate let-data>{{ data.text | phrase | async }}</ng-template>
+			</go5-dropdown-selection>
+		</ng-container>
+	</td>
+</ng-template>
+<ng-template #typeBody let-i="index" let-value let-column="column">
+	<td style="width: 180px; min-width: 180px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span>{{ getSelectedText(customerTypes, value.type?.value) | phrase | async }}</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-dropdown-selection
+				[(ngModel)]="value.type.value"
+				(selected)="saveChangeDdl('type', value, $event)"
+				(focus)="setValue('type', value)"
+				[dataSource]="customerTypes"
+				[disabled]="value.type.state === CustomerFieldState.Hidden"
+				[fields]="field"
+				[mode]="'single'"
+				[popupWidth_px]="200"
+				[allowShowRemove]="false"
+			>
+				<ng-template #itemTemplate let-data>{{ data.text | phrase | async }}</ng-template>
+				<ng-template #valueTemplate let-data>{{ data.text | phrase | async }}</ng-template>
+			</go5-dropdown-selection>
+		</ng-container>
+	</td>
+</ng-template>
+<ng-template #sourceBody let-i="index" let-value let-column="column">
+	<td style="width: 180px; min-width: 180px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span>{{ getSelectedText(source, value.sourceOfLead?.value, sourceOfLeadField) | phrase | async }}</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-dropdown-selection
+				[(ngModel)]="value.sourceOfLead.value"
+				(selected)="saveChangeDdl('sourceOfLead', value, $event)"
+				(focus)="setValue('sourceOfLead', value)"
+				[dataSource]="source"
+				[disabled]="value.sourceOfLead.state === CustomerFieldState.Hidden"
+				[fields]="sourceOfLeadField"
+				[mode]="'single'"
+				[allowFiltering]="true"
+				[popupWidth_px]="200"
+				[allowShowRemove]="false"
+			>
+			</go5-dropdown-selection>
+		</ng-container>
+	</td>
+</ng-template>
+<ng-template #customGroupBody let-i="index" let-value let-column="column">
+	<td style="width: 180px; min-width: 180px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span>{{
+				getSelectedText(customerGroup, value.customerGroupId?.value, customerGroupField) | phrase | async
+			}}</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-dropdown-selection
+				[(ngModel)]="value.customerGroupId.value"
+				(selected)="saveChangeDdl('customerGroupId', value, $event)"
+				(focus)="setValue('customerGroupId', value)"
+				[dataSource]="customerGroup"
+				[disabled]="value.customerGroupId.state === CustomerFieldState.Hidden"
+				[fields]="customerGroupField"
+				[mode]="'single'"
+				[allowFiltering]="true"
+				[popupWidth_px]="200"
+				[allowShowRemove]="false"
+			>
+			</go5-dropdown-selection>
+		</ng-container>
+	</td>
+</ng-template>
+<ng-template #noteBody let-i="index" let-value let-column="column">
+	<td style="width: 300px; min-width: 300px">
+		<ng-container *ngIf="i !== indexI || !canEdit">
+			<span>{{ value.notes?.value }}</span>
+		</ng-container>
+
+		<ng-container *ngIf="i === indexI && canEdit">
+			<go5-textfield
+				[(ngModel)]="value.notes.value"
+				(change)="saveChange('notes', value)"
+				(focus)="setValue('notes', value)"
+				[maxLength]="1000"
+				category="primary"
+				(keyup)="autosize($event)"
+			>
+			</go5-textfield>
+		</ng-container>
+	</td>
+</ng-template>

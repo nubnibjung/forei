@@ -1,0 +1,140 @@
+@import '../../../../../assets/scss/ScssVariable';
+
+.e-input-value {
+	align-self: center;
+}
+
+.toolbar-report .filter-tab .sub-filter:not(.chooser-column) {
+	padding: 5px 0 5px 2px;
+}
+
+.img-owner-list {
+	ul {
+		margin: 2px 10px 4px 0;
+		display: inline-block;
+
+		li {
+			display: inline-block;
+			width: 25px;
+			overflow: visible;
+
+			img {
+				width: 33px;
+				height: 33px;
+				border-radius: 50%;
+			}
+		}
+	}
+
+	& > div {
+		display: inline-flex;
+		width: 30px;
+		height: 40px;
+
+		.label.label-add {
+			width: 20px;
+			height: 20px;
+			padding: 0;
+			margin: auto;
+
+			i {
+				margin: auto;
+			}
+		}
+	}
+}
+
+.tb-inplace {
+	td {
+		vertical-align: top;
+	}
+
+	tr.highlight {
+		.label-inplace {
+			i {
+				display: none;
+			}
+		}
+
+		.e-chips:only-child .e-chips-close {
+			display: none;
+		}
+	}
+
+	tr:not(.highlight) {
+		.label.label-stt.label-stt-outline.label-inplace {
+			color: $silverChalice;
+			border: none;
+		}
+
+		i {
+			margin-right: 4px;
+		}
+
+		.e-chips-close {
+			display: none;
+		}
+
+		.customerName {
+			.form-group {
+				&:first-child > p {
+					margin-left: 12px;
+					margin-bottom: 0;
+				}
+
+				.text-link,
+				.text-link-primary {
+					input[disabled] {
+						cursor: pointer;
+					}
+				}
+
+				.e-float-input:not(.e-disabled) input {
+					color: $color-text;
+					-webkit-text-fill-color: $color-text;
+				}
+
+				&:first-child .e-float-input:not(.e-disabled) input[disabled] {
+					color: $color-primary;
+					-webkit-text-fill-color: $color-primary;
+				}
+			}
+		}
+	}
+}
+.tb-border-table {
+	border-left: none !important;
+	border-right: none !important;
+}
+
+.ellipsis-text {
+	max-width: 150px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.close-scrollbar:has(app-table-standard)::-webkit-scrollbar-thumb {
+	background-color: #dfdfe8 !important;
+	border-radius: 10px !important;
+}
+
+.close-scrollbar:has(app-table-standard)::-webkit-scrollbar {
+	display: unset;
+	width: 6px;
+	background-color: white;
+}
+
+.contentRight {
+	overflow: visible !important;
+}
+
+
+.close-scrollbar:has(app-table-standard)::-webkit-scrollbar-thumb:hover {
+	background-color: #bcbcc8 !important;
+}
+
+.customer-management-table {
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+}
